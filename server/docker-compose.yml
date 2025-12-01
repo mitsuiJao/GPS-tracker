@@ -4,8 +4,8 @@ services:
         image: eclipse-mosquitto:2.0
         container_name: mosquitto
         ports:
-            - 1883:1883
-            - 9001:9001
+            - "1883:1883"
+            - "9001:9001"
         restart: always
         volumes:
             - ./mosquitto/config:/mosquitto/config
@@ -31,6 +31,13 @@ services:
         depends_on:
             - mosquitto
             - db
-        enbironment:
+        environment:
             MQTT_BROKER: mosquitto
             DB_HOST: db
+
+    web:
+        image: node:18-alpine
+        ports:
+            - "3000:3000"
+        depends_on:
+            - worker
