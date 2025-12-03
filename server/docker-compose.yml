@@ -27,6 +27,8 @@ services:
     worker:
         build: ./worker
         container_name: bike_worker
+        volumes:
+            - ./worker:/app
         restart: always
         depends_on:
             - mosquitto
