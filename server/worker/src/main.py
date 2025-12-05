@@ -1,6 +1,7 @@
 from paho.mqtt import client as mqtt
 import psycopg2
 from psycopg2 import pool
+import os
 
 print("working!")
 
@@ -8,14 +9,12 @@ MQTTHOST = "broker.emqx.io"
 MQTTPORT = 1883
 TOPIC = "test/mitsuijao/24"
 
-DBHOST = "localhost"
+DBHOST = os.getenv("DB_HOST", "localhost")
 DBPORT = 5432
 USER = "nishima"
 PASS = "nishima"
 DBNAME = "biketracker"
-
-
-DSN = f"postgresql://{USER}:{PASS}@{DBHOST}/{DBNAME}"
+TABLE = "coordinate"
 
 db_pool = None
 
@@ -29,7 +28,10 @@ def on_disconnect(client, userdata, rc, prop):
         print(f"Unexpected disconnection with result code {rc}")
         
 def on_message(client, userdata, msg):
-    print(f"Received message on topic {msg.topic}: {msg.payload.decode()}")
+    payload = msg.payload.decode()
+    print(f"Received message on topic {msg.topic}: {payload}")
+    save_db(payload)
+
 
 def init_pool():
     global db_pool
@@ -48,14 +50,16 @@ def init_pool():
         raise
 
 def save_db(msg):
-    conn = db_pool.get_connection()
+    conn = db_pool.getconn()
     
     try:
         cur = conn.cursor()
-        cur.execute(f"INSERT INTO {DBNAME} VALUES (NOW(), {msg})")
+        sql = f"INSERT INTO {TABLE} VALUES (NOW(), %s)"
+        cur.execute(sql, (msg,))
         conn.commit()
+
     except Exception as e:
-        conn.rollback() 
+        conn.rollback()
         print(f"DBerror: {e}")
     finally:
         db_pool.putconn(conn)
@@ -68,5 +72,14 @@ def main():
     client.on_disconnect = on_disconnect
     client.on_message = on_message
 
-    client.connect(MQTTHOST, MQTTPORT)
-    client.loop_forever()
+    try:
+        client.connect(MQTTHOST, MQTTPORT)
+        client.loop_forever()
+    except KeyboadInterrupt:
+        pass
+    finally:
+        if db_pool:
+            db_pool.closeall()
+
+if __name__ == "__main__":
+    main()
