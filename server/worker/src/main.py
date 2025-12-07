@@ -31,7 +31,7 @@ def on_disconnect(client, userdata, rc, prop):
 def on_message(client, userdata, msg):
     payload = msg.payload.decode()
     print(f"Received message on topic {msg.topic}: {payload}")
-    latitude, longitude = payload.split(".")
+    latitude, longitude = payload.split(",")
     save_db(float(latitude), float(longitude))
 
 
@@ -51,12 +51,12 @@ def init_pool():
         print(f"DB connection error: {e}")
         raise
 
-def save_db(lalatitude, longitude):
+def save_db(latitude, longitude):
     conn = db_pool.getconn()
     
     try:
         cur = conn.cursor()
-        sql = f"INSERT INTO {TABLE} VALUES (NOW(), %s, %s)"
+        sql = f"INSERT INTO {TABLE} (timestamp, latitude, longitude) VALUES (NOW(), %s, %s)"
         cur.execute(sql, (latitude, longitude))
         conn.commit()
 
