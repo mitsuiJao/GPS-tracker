@@ -4,12 +4,14 @@ services:
         image: eclipse-mosquitto:2.0
         container_name: mosquitto
         ports:
-            - "1883:1883"
-            - "9001:9001"
+            - "1884:1883"
+            # - "9001:9001"
         restart: always
         volumes:
             - ./mosquitto/config:/mosquitto/config
             - ./mosquitto/data:/mosquitto/data
+        networks:
+            - mqtt_net
 
     db:
         image: postgres:17-alpine
@@ -29,6 +31,8 @@ services:
             timeout: 10s
             retries: 5
             start_period: 5s
+        networks:
+            - db_net
 
     worker:
         build: ./worker
@@ -42,6 +46,9 @@ services:
         environment:
             MQTT_BROKER: mosquitto
             DB_HOST: db
+        networks:
+            - mqtt_net
+            - db_net
 
     web:
         image: node:18-alpine
@@ -51,3 +58,9 @@ services:
             - "./web:/web"
         depends_on:
             - worker
+
+networks:
+    mqtt_net:
+        driver: bridge
+    db_net:
+        driver: bridge

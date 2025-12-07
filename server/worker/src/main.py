@@ -2,10 +2,11 @@ from paho.mqtt import client as mqtt
 import psycopg2
 from psycopg2 import pool
 import os
+import struct
 
 print("working!")
 
-MQTTHOST = "broker.emqx.io"
+MQTTHOST = os.getenv("MQTT_BROKER")
 MQTTPORT = 1883
 TOPIC = "test/mitsuijao/24"
 
@@ -30,7 +31,8 @@ def on_disconnect(client, userdata, rc, prop):
 def on_message(client, userdata, msg):
     payload = msg.payload.decode()
     print(f"Received message on topic {msg.topic}: {payload}")
-    save_db(payload)
+    latitude, longitude = payload.split(".")
+    save_db(float(latitude), float(longitude))
 
 
 def init_pool():
@@ -49,13 +51,13 @@ def init_pool():
         print(f"DB connection error: {e}")
         raise
 
-def save_db(msg):
+def save_db(lalatitude, longitude):
     conn = db_pool.getconn()
     
     try:
         cur = conn.cursor()
-        sql = f"INSERT INTO {TABLE} VALUES (NOW(), %s)"
-        cur.execute(sql, (msg,))
+        sql = f"INSERT INTO {TABLE} VALUES (NOW(), %s, %s)"
+        cur.execute(sql, (latitude, longitude))
         conn.commit()
 
     except Exception as e:
@@ -75,7 +77,7 @@ def main():
     try:
         client.connect(MQTTHOST, MQTTPORT)
         client.loop_forever()
-    except KeyboadInterrupt:
+    except KeyboardInterrupt:
         pass
     finally:
         if db_pool:
