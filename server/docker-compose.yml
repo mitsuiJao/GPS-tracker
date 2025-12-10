@@ -4,25 +4,38 @@ services:
         image: eclipse-mosquitto:2.0
         container_name: mosquitto
         ports:
-            - "1883:1883"
-            - "9001:9001"
+            - "1884:1883"
+            # - "9001:9001"
         restart: always
         volumes:
             - ./mosquitto/config:/mosquitto/config
             - ./mosquitto/data:/mosquitto/data
+        environment:
+            - MQTT_USER=${MQTT_USER}
+            - MQTT_PASS=${MQTT_PASS}
+        networks:
+            - mqtt_net
 
     db:
-        image: postgis/postgis:15-3.3 
+        image: postgres:17-alpine
         container_name: bike-db
         restart: always
         environment:
-            POSTGRES_USER: myuser
-            POSTGRES_PASSWORD: mypassword 
-            POSTGRES_DB: biketracker
+            - POSTGRES_USER=${DB_USER}
+            - POSTGRES_PASSWORD=${DB_PASS}
+            - POSTGRES_DB=biketracker
         volumes:
             - ./db_data:/var/lib/postgresql/data
         ports:
             - "5432:5432"
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d biketracker || exit 1"]
+            interval: 10s
+            timeout: 10s
+            retries: 5
+            start_period: 5s
+        networks:
+            - db_net
 
     worker:
         build: ./worker
@@ -31,11 +44,18 @@ services:
             - ./worker:/app
         restart: always
         depends_on:
-            - mosquitto
-            - db
+            db:
+                condition: service_healthy
         environment:
-            MQTT_BROKER: mosquitto
-            DB_HOST: db
+            - MQTT_BROKER=mosquitto
+            - MQTT_USER=${MQTT_USER}
+            - MQTT_PASS=${MQTT_PASS}            
+            - DB_USER=${DB_USER}
+            - DB_PASS=${DB_PASS}
+            - DB_HOST=db
+        networks:
+            - db_net
+            - mqtt_net
 
     web:
         image: node:18-alpine
@@ -45,3 +65,9 @@ services:
             - "./web:/web"
         depends_on:
             - worker
+
+networks:
+    mqtt_net:
+        driver: bridge
+    db_net:
+        driver: bridge
