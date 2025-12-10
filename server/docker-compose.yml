@@ -48,9 +48,14 @@ services:
                 condition: service_healthy
         environment:
             - MQTT_BROKER=mosquitto
-            - DB_HOST=db
             - MQTT_USER=${MQTT_USER}
-            - MQTT_PASS=${MQTT_PASS}
+            - MQTT_PASS=${MQTT_PASS}            
+            - DB_USER=${DB_USER}
+            - DB_PASS=${DB_PASS}
+            - DB_HOST=db
+        networks:
+            - db_net
+            - mqtt_net
 
     web:
         image: node:18-alpine
