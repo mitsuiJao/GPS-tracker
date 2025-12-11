@@ -1,6 +1,8 @@
 db_data/
 
-__pychache__/
-
 .env
 .venv
+
+node_modules
+
+__pychache__

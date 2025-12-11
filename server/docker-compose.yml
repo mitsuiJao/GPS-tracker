@@ -58,13 +58,16 @@ services:
             - mqtt_net
 
     web:
-        image: node:18-alpine
+        build: ./web
+        container_name: frontend
         ports:
-            - "3000:3000"
+            - "5173:5173"
         volumes:
-            - "./web:/web"
+            - "./web:/app"
+            - "/app/node_modules"
         depends_on:
             - worker
+        restart: "no"
 
 networks:
     mqtt_net:
