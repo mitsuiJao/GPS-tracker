@@ -57,20 +57,31 @@ services:
             - db_net
             - mqtt_net
 
-    web:
-        build: ./web
-        container_name: frontend
+    react:
+        build: ./react
+        container_name: react
         ports:
             - "5173:5173"
         volumes:
-            - "./web:/app"
+            - "./react:/app"
             - "/app/node_modules"
         depends_on:
             - worker
         restart: "no"
+    
+    api:
+        build: ./express
+        container_name: api
+        networks:
+            - internal_net
 
 networks:
     mqtt_net:
         driver: bridge
     db_net:
         driver: bridge
+    internal_net:
+        driver: bridge
+        internal: true
+
+# 後でinternalに設定しといて
