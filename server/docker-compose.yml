@@ -52,22 +52,53 @@ services:
             - MQTT_PASS=${MQTT_PASS}            
             - DB_USER=${DB_USER}
             - DB_PASS=${DB_PASS}
+            - DB_NAME=${DB_NAME}
+            - DB_PORT=${DB_PORT}
+            - DB_TABLE=${DB_TABLE}
             - DB_HOST=db
         networks:
             - db_net
             - mqtt_net
 
-    web:
-        image: node:18-alpine
+    react:
+        build: ./react
+        container_name: react
         ports:
-            - "3000:3000"
+            - "5173:5173"
         volumes:
-            - "./web:/web"
+            - "./react:/app"
+            - "/app/node_modules"
+        environment:
+            - VITE_GCP_APIKEY=${GCP_APIKEY}
         depends_on:
             - worker
+        restart: "no"
+    
+    api:
+        build: ./express
+        container_name: api
+        environment:
+            - DB_USER=${DB_USER}
+            - DB_PASS=${DB_PASS}
+            - DB_NAME=${DB_NAME}
+            - DB_PORT=${DB_PORT}
+            - DB_TABLE=${DB_TABLE}
+            - DB_HOST=db
+        networks:
+            - internal_net
+            - db_net
+        depends_on:
+            db:
+                condition: service_healthy
+
 
 networks:
     mqtt_net:
         driver: bridge
     db_net:
         driver: bridge
+    internal_net:
+        driver: bridge
+        internal: true
+
+# 後でinternalに設定しといて
