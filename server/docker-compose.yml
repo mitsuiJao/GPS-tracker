@@ -65,6 +65,8 @@ services:
         volumes:
             - "./react:/app"
             - "/app/node_modules"
+        environment:
+            - VITE_GCP_APIKEY=${GCP_APIKEY}
         depends_on:
             - worker
         restart: "no"
