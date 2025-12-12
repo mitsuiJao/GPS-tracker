@@ -91,20 +91,18 @@ services:
             db:
                 condition: service_healthy
 
-    api_tester:
-        image: alpine/curl:latest
-        container_name: api_tester
-        networks:
-            - internal_net
-        stdin_open: true
-        tty: true
-        command: tail -f /dev/null
-        depends_on:
-            api:
-                condition: service_started
+    # api_tester:
+    #     image: alpine/curl:latest
+    #     container_name: api_tester
+    #     networks:
+    #         - internal_net
+    #     stdin_open: true
+    #     tty: true
+    #     command: tail -f /dev/null
+    #     depends_on:
+    #         api:
+    #             condition: service_started
                 
-# TODO: mainブランチマージ前に消しといてねー
-
 networks:
     mqtt_net:
         driver: bridge
