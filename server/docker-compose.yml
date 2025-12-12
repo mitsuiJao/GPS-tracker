@@ -52,6 +52,9 @@ services:
             - MQTT_PASS=${MQTT_PASS}            
             - DB_USER=${DB_USER}
             - DB_PASS=${DB_PASS}
+            - DB_NAME=${DB_NAME}
+            - DB_PORT=${DB_PORT}
+            - DB_TABLE=${DB_TABLE}
             - DB_HOST=db
         networks:
             - db_net
@@ -74,8 +77,20 @@ services:
     api:
         build: ./express
         container_name: api
+        environment:
+            - DB_USER=${DB_USER}
+            - DB_PASS=${DB_PASS}
+            - DB_NAME=${DB_NAME}
+            - DB_PORT=${DB_PORT}
+            - DB_TABLE=${DB_TABLE}
+            - DB_HOST=db
         networks:
             - internal_net
+            - db_net
+        depends_on:
+            db:
+                condition: service_healthy
+
 
 networks:
     mqtt_net:

@@ -5,11 +5,11 @@ import os
 class ManageDB():
     def __init__(self):
         self.DBHOST = os.getenv("DB_HOST", "localhost")
-        self.DBPORT = 5432
+        self.DBPORT = os.getenv("DB_PORT")
         self.USER = os.getenv("DB_USER")
         self.PASS = os.getenv("DB_PASS")
-        self.DBNAME = "biketracker"
-        self.TABLE = "sensor_data"
+        self.DBNAME = os.getenv("DB_NAME")
+        self.TABLE = os.getenv("DB_TABLE")
         self._connection = None
         self.pool = None
 
