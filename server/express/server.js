@@ -20,8 +20,8 @@ const sql = {
 }
 
 app.use(cors({
-    // origin: "http://localhost:5173",
-    origin: "0.0.0.0"
+    origin: "http://localhost:5173",
+    // origin: "0.0.0.0"
 }));
 
 app.get("/map", function(req, res) {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { GoogleMap, LoadScript, Polyline } from "@react-google-maps/api";
 import axios from "axios";
 
@@ -20,24 +20,47 @@ const flightPath = [
 ];
 
 const polylineOptions = {
-    strokeColor: '#FF0000', 
-    strokeOpacity: 1.0,     
-    strokeWeight: 4,        
-    geodesic: true,         
+    strokeColor: '#FF0000',
+    strokeOpacity: 1.0,
+    strokeWeight: 4,
+    geodesic: true,
 };
 
 const key = import.meta.env.VITE_GCP_APIKEY;
 
+
 function Map() {
+    const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchItems = async () => {
+            axios.get("http://localhost:8080/map")
+                .then(res => {
+                    console.log(res);
+                    setItems(res.data.map(item => ({
+                        lat: item.latitude,
+                        lng: item.longitude
+                    })));
+                })
+                .catch(err =>{
+                    console.error(err);
+                })
+
+            }
+
+            fetchItems();
+        }, [])
+
     return ( // マップの位置おかしいのとサイズ調整しといて
         <LoadScript googleMapsApiKey={key}>
             <GoogleMap
                 mapContainerStyle={containerStyle}
                 center={center}
                 zoom={17}
-            > 
+            >
                 <Polyline
-                    path={flightPath}
+                    path={items}
                     options={polylineOptions}
                 />
             </GoogleMap>

@@ -1,10 +1,10 @@
 import React from "react";
-import Map from "../components/Map";
+import MapLine from "../components/MapLine";
 
 function MapMain() {
     return (
         <div style={{ width: "100%", height:"100%" }}>
-            <Map />
+            <MapLine />
         </div>
     );
 }
