@@ -14,6 +14,7 @@ class ManageDB():
         self.pool = None
 
         self.init_pool()
+        self.create_table_if_not_exists()
 
     def init_pool(self):
         try:
@@ -33,6 +34,27 @@ class ManageDB():
         except psycopg2.Error as e:
             print(f"DB connection error: {e}")
             raise
+
+    def create_table_if_not_exists(self):
+        conn = self.pool.getconn()
+        try:
+            cur = conn.cursor()
+            sql = f"""
+            CREATE TABLE IF NOT EXISTS {self.TABLE} (
+                id SERIAL PRIMARY KEY,
+                timestamp TIMESTAMPTZ NOT NULL,
+                latitude DOUBLE PRECISION NOT NULL,
+                longitude DOUBLE PRECISION NOT NULL
+            );
+            """
+            cur.execute(sql)
+            conn.commit()
+            print(f"Table '{self.TABLE}' checked/created successfully.")
+        except Exception as e:
+            conn.rollback()
+            print(f"Error creating table: {e}")
+        finally:
+            self.pool.putconn(conn)
 
     def insertDB(self, latitude, longitude):
         conn = self.pool.getconn()
