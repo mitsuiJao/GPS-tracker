@@ -73,6 +73,9 @@ services:
         depends_on:
             - worker
         restart: "no"
+        networks:
+            # - internal_net
+            - dev
     
     api:
         build: ./express
@@ -87,22 +90,26 @@ services:
         networks:
             - internal_net
             - db_net
+        ports:
+            - "8080:8000"
         depends_on:
             db:
                 condition: service_healthy
 
-    # api_tester:
-    #     image: alpine/curl:latest
-    #     container_name: api_tester
-    #     networks:
-    #         - internal_net
-    #     stdin_open: true
-    #     tty: true
-    #     command: tail -f /dev/null
-    #     depends_on:
-    #         api:
-    #             condition: service_started
-                
+    api_tester:
+        image: alpine/curl:latest
+        container_name: api_tester
+        networks:
+            # - internal_net
+            - dev
+        stdin_open: true
+        tty: true
+        command: tail -f /dev/null
+        depends_on:
+            api:
+                condition: service_started
+                # TODO: コメントアウトしといてねー
+
 networks:
     mqtt_net:
         driver: bridge
@@ -111,5 +118,7 @@ networks:
     internal_net:
         driver: bridge
         internal: true
+    dev:
+        driver: bridge
 
 # 後でinternalに設定しといて
