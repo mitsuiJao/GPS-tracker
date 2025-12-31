@@ -18,21 +18,42 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
 }
 
 html,
 body,
 #root {
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    padding: 0;
+  height: 100vh;
+  /* Force viewport height */
+  width: 100vw;
+  /* Force viewport width */
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+  /* Prevent global scroll */
+  position: fixed;
+  /* Lock body in place */
+  top: 0;
+  left: 0;
 }
 
 body {
-    min-width: 320px;
+  min-width: 320px;
+  background-color: #242424;
+  /* Ensure background matches */
 }
 
 
@@ -52,9 +73,11 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -65,9 +88,11 @@ button:focus-visible {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #747bff;
   }
+
   button {
     background-color: #f9f9f9;
   }
