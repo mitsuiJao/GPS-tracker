@@ -34,20 +34,12 @@ html {
 }
 
 html,
-body,
-#root {
-  height: 100vh;
-  /* Force viewport height */
-  width: 100vw;
-  /* Force viewport width */
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: hidden;
-  /* Prevent global scroll */
-  position: fixed;
-  /* Lock body in place */
-  top: 0;
-  left: 0;
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #242424;
 }
 
 body {

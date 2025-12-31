@@ -1,4 +1,5 @@
 import React from "react";
+import Calendar from "./Calendar";
 
 function UtilityBanner() {
     const bannerStyle = {
@@ -17,6 +18,7 @@ function UtilityBanner() {
             <div style={{ marginTop: "20px" }}>
                 <p>Status: Active</p>
                 <p>GPS Options</p>
+                <Calendar />
                 {/* Add more utility items here later */}
             </div>
         </div>
