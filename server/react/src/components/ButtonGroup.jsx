@@ -2,7 +2,7 @@ import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Box from "@mui/material/Box";
 
-function VariatButtonGroup() {
+function VariatButtonGroup({ ...args }) {
     return (
         <Box
             sx={{
@@ -12,11 +12,9 @@ function VariatButtonGroup() {
             }}
         >
             <ButtonGroup variant="outlined" aria-label="outlined primary button group">
-                <Button>year</Button>
-                <Button>month</Button>
-                <Button>week</Button>
-                <Button>day</Button>
-                <Button>hour</Button>
+                {Object.entries(args).map(([key, value]) => (
+                    <Button key={key}>{value}</Button>
+                ))}
             </ButtonGroup>
         </Box>
     )

@@ -13,13 +13,15 @@ function UtilityBanner() {
         overflowY: "auto" // Allow internal scroll if needed
     };
 
+    const period = { year: "year", month: "month", week: "week", day: "day", hour: "hour" };
+
     return (
         <div style={bannerStyle}>
             <h2 style={{ marginTop: 0 }}>Tracker</h2>
             <p>Status: Active</p>
             <p>GPS Options</p>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", marginTop: "20px" }}>
-                <VariatButtonGroup />
+                <VariatButtonGroup {...period} />
                 <Calendar />
                 <svg
                     width="24"
