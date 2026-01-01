@@ -1,5 +1,6 @@
 import React from "react";
 import Calendar from "./Calendar";
+import VariatButtonGroup from "./ButtonGroup";
 
 function UtilityBanner() {
     const bannerStyle = {
@@ -14,12 +15,27 @@ function UtilityBanner() {
 
     return (
         <div style={bannerStyle}>
-            <h2 style={{ marginTop: 0 }}>Utilities</h2>
-            <div style={{ marginTop: "20px" }}>
-                <p>Status: Active</p>
-                <p>GPS Options</p>
+            <h2 style={{ marginTop: 0 }}>Tracker</h2>
+            <p>Status: Active</p>
+            <p>GPS Options</p>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", marginTop: "20px" }}>
+                <VariatButtonGroup />
                 <Calendar />
-                {/* Add more utility items here later */}
+                <svg
+                    width="24"
+                    height="40"
+                    viewBox="0 0 24 40"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        d="M12 0 Q 0 10 12 20 T 12 40"
+                        stroke="#666666"
+                        strokeWidth="4"
+                        strokeLinecap="round"
+                    />
+                </svg>
+                <Calendar />
             </div>
         </div>
     );
