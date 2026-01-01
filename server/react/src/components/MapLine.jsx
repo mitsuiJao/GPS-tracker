@@ -15,20 +15,22 @@ const center = {
 const polylineOptions = {
     strokeColor: '#FF0000',
     strokeOpacity: 1.0,
-    strokeWeight: 4,
+    strokeWeight: 6,
     geodesic: true,
 };
 
 const key = import.meta.env.VITE_GCP_APIKEY;
 
 
-function Map() {
+function Map({ start, end }) {
     const [items, setItems] = useState([]);
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchItems = async () => {
-            axios.get("http://localhost:8080/map")
+            axios.get(
+                // "http://localhost:8080/map?start=" + start.format("YYYY-MM-DDTHH:mm:ss") + "&end=" + end.format("YYYY-MM-DDTHH:mm:ss")
+                "http://localhost:8080/map"
+            )
                 .then(res => {
                     console.log(res);
                     setItems(res.data.map(item => ({
@@ -36,14 +38,14 @@ function Map() {
                         lng: item.longitude
                     })));
                 })
-                .catch(err =>{
+                .catch(err => {
                     console.error(err);
                 })
 
-            }
+        }
 
-            fetchItems();
-        }, [])
+        fetchItems();
+    }, [])
 
     return ( // マップの位置おかしいのとサイズ調整しといて
         <LoadScript googleMapsApiKey={key}>

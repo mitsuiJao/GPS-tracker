@@ -1,8 +1,27 @@
 import React from "react";
 import Calendar from "./Calendar";
-import VariatButtonGroup from "./ButtonGroup";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import ButtonGroup from "@mui/material/ButtonGroup";
+import Box from "@mui/material/Box";
+import dayjs from "dayjs";
 
-function UtilityBanner() {
+function startEndSet(period) {
+    switch (period) {
+        case "year":
+            return { start: dayjs().subtract(1, "year"), end: dayjs() };
+        case "month":
+            return { start: dayjs().subtract(1, "month"), end: dayjs() };
+        case "week":
+            return { start: dayjs().subtract(1, "week"), end: dayjs() };
+        case "day":
+            return { start: dayjs().subtract(1, "day"), end: dayjs() };
+        case "hour":
+            return { start: dayjs().subtract(1, "hour"), end: dayjs() };
+    }
+}
+
+function UtilityBanner({ start, end, setStart, setEnd }) {
     const bannerStyle = {
         padding: "20px",
         height: "100%",
@@ -21,8 +40,25 @@ function UtilityBanner() {
             <p>Status: Active</p>
             <p>GPS Options</p>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", marginTop: "20px" }}>
-                <VariatButtonGroup {...period} />
-                <Calendar />
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center"
+                    }}
+                >
+                    <ButtonGroup variant="outlined" aria-label="outlined primary button group">
+                        {Object.entries(period).map(([key, value]) => (
+                            <Button key={key} onClick={() => {
+                                setStart(startEndSet(key).start);
+                                setEnd(startEndSet(key).end);
+                            }}>
+                                {value}
+                            </Button>
+                        ))}
+                    </ButtonGroup>
+                </Box>
+                <Calendar value={start} onChange={setStart} />
                 <svg
                     width="24"
                     height="40"
@@ -37,7 +73,11 @@ function UtilityBanner() {
                         strokeLinecap="round"
                     />
                 </svg>
-                <Calendar />
+                <Calendar value={end} onChange={setEnd} />
+                <Stack direction="row" spacing={2}>
+                    <Button variant="text" onClick={() => { setStart(dayjs().subtract(1, "day")); setEnd(dayjs()) }}>Reset</Button>
+                    <Button variant="contained">Submit</Button>
+                </Stack>
             </div>
         </div>
     );

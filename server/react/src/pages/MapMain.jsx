@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import MapLine from "../components/MapLine";
 import UtilityBanner from "../components/UtilityBanner";
+import dayjs from "dayjs";
 
+// TODO: 次APIのクエリどうにかしといて
 function MapMain() {
+    const [start, setStart] = useState(dayjs().subtract(1, "day"));
+    const [end, setEnd] = useState(dayjs());
+    useEffect(() => {
+        console.log(start, end);
+    }, [start, end]);
+
     return (
         <div style={{
             display: "flex",
@@ -16,10 +24,10 @@ function MapMain() {
             backgroundColor: "#242424" // Match bg
         }}>
             <div style={{ width: "25%", flexShrink: 0, height: "100%", overflowY: "auto", overflowX: "hidden" }}>
-                <UtilityBanner />
+                <UtilityBanner start={start} end={end} setStart={setStart} setEnd={setEnd} />
             </div>
             <div style={{ flexGrow: 1, height: "100%", position: "relative" }}>
-                <MapLine />
+                <MapLine start={start} end={end} />
             </div>
         </div>
     );
