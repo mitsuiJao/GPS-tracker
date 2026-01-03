@@ -1,6 +1,13 @@
 const express = require("express");
 const cors = require("cors");
 const pg = require("pg");
+const dayjs = require("dayjs");
+const utc = require("dayjs/plugin/utc");
+const timezone = require("dayjs/plugin/timezone");
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault("Asia/Tokyo");
+dayjs.locale("ja");
 // require("dotenv").config();
 
 const app = express();
@@ -13,18 +20,20 @@ const pool = new pg.Pool({
     port: process.env.DB_PORT
 })
 
-const sql = {
-    text: "SELECT * FROM " + process.env.DB_TABLE,
-    // text: "SELECT * FROM $1 WHERE timestamp BETWEEN $2 AND $3",
-    // value: [process.env.DB_TABLE]
-}
 
 app.use(cors({
     origin: "http://localhost:5173",
     // origin: "0.0.0.0"
 }));
 
-app.get("/map", function(req, res) {
+app.get("/map", function (req, res) {
+    const sql = {
+        text: "SELECT * FROM " + process.env.DB_TABLE + " WHERE timestamp BETWEEN $1 AND $2",
+        values: [
+            dayjs.tz(req.query.start, "Asia/Tokyo").utc().format("YYYY-MM-DDTHH:mm:ss"),
+            dayjs.tz(req.query.end, "Asia/Tokyo").utc().format("YYYY-MM-DDTHH:mm:ss")
+        ]
+    }
     pool.connect(function (err, client) {
         if (err) {
             console.log(err);
