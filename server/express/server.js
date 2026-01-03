@@ -27,13 +27,16 @@ app.use(cors({
 }));
 
 app.get("/map", function (req, res) {
+    const { start, end } = req.query;
+
+    const startDate = dayjs.tz(start, "Asia/Tokyo").utc().format("YYYY-MM-DDTHH:mm:ss");
+    const endDate = dayjs.tz(end, "Asia/Tokyo").utc().format("YYYY-MM-DDTHH:mm:ss");
+
     const sql = {
-        text: "SELECT * FROM " + process.env.DB_TABLE + " WHERE timestamp BETWEEN $1 AND $2",
-        values: [
-            dayjs.tz(req.query.start, "Asia/Tokyo").utc().format("YYYY-MM-DDTHH:mm:ss"),
-            dayjs.tz(req.query.end, "Asia/Tokyo").utc().format("YYYY-MM-DDTHH:mm:ss")
-        ]
+        text: "SELECT * FROM " + process.env.DB_TABLE + " WHERE timestamp BETWEEN $1 AND $2 ORDER BY timestamp ASC",
+        values: [startDate, endDate]
     }
+    console.log("Querying map data:", sql.values);
     pool.connect(function (err, client) {
         if (err) {
             console.log(err);
@@ -42,6 +45,7 @@ app.get("/map", function (req, res) {
             client
                 .query(sql)
                 .then((result) => {
+                    console.log("Query result count:", result.rows.length);
                     res.status(200).json(result.rows);
                 })
                 .catch((e) => {

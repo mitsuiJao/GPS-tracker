@@ -27,10 +27,12 @@ function Map({ start, end }) {
 
     useEffect(() => {
         const fetchItems = async () => {
-            axios.get(
-                // "http://localhost:8080/map?start=" + start.format("YYYY-MM-DDTHH:mm:ss") + "&end=" + end.format("YYYY-MM-DDTHH:mm:ss")
-                "http://localhost:8080/map"
-            )
+            axios.get("http://localhost:8080/map", {
+                params: {
+                    start: start.format("YYYY-MM-DDTHH:mm:ss"),
+                    end: end.format("YYYY-MM-DDTHH:mm:ss")
+                }
+            })
                 .then(res => {
                     console.log(res);
                     setItems(res.data.map(item => ({
@@ -45,7 +47,7 @@ function Map({ start, end }) {
         }
 
         fetchItems();
-    }, [])
+    }, [start, end])
 
     return ( // マップの位置おかしいのとサイズ調整しといて
         <LoadScript googleMapsApiKey={key}>

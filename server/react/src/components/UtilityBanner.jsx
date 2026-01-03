@@ -67,7 +67,10 @@ function UtilityBanner({ start, end, setStart, setEnd }) {
                     </IconButton>
                     <Text>Tomorrow</Text>
                 </Stack>
-                <Calendar value={start} onChange={setStart} />
+                <Calendar value={start} onChange={(newValue) => {
+                    setStart(newValue.startOf("day"));
+                    setEnd(newValue.endOf("day"));
+                }} />
                 {/* 
                 <Text>Start: {start.format("YYYY-MM-DD")}</Text>
                 <Text>End: {end.format("YYYY-MM-DD")}</Text> */}

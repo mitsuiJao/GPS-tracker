@@ -5,8 +5,8 @@ import dayjs from "dayjs";
 
 // TODO: 次APIのクエリどうにかしといて
 function MapMain() {
-    const [start, setStart] = useState(dayjs().subtract(1, "day"));
-    const [end, setEnd] = useState(dayjs());
+    const [start, setStart] = useState(dayjs().startOf("day"));
+    const [end, setEnd] = useState(dayjs().endOf("day"));
     useEffect(() => {
         console.log(start, end);
     }, [start, end]);
