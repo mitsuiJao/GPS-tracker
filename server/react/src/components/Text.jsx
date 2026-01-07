@@ -1,5 +1,3 @@
-import React from "react";
-
 // propsオブジェクトのchildrenのみを抜き取る
 // props.children等価
 function Text({ children }) {
