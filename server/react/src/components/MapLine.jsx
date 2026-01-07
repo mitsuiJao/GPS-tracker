@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { GoogleMap, LoadScript, Polyline } from "@react-google-maps/api";
-import axios from "axios";
+import React, { useState, useEffect, useCallback } from "react";
+import { GoogleMap, Polyline } from "@react-google-maps/api";
 
 const containerStyle = {
     height: "100%",
@@ -8,9 +7,10 @@ const containerStyle = {
 };
 
 const center = {
-    lat: 35.69575,
-    lng: 139.77521,
+    lat: 38.6362694,
+    lng: 137.48694,
 };
+const zoom = 6;
 
 const polylineOptions = {
     strokeColor: '#FF0000',
@@ -19,49 +19,42 @@ const polylineOptions = {
     geodesic: true,
 };
 
-const key = import.meta.env.VITE_GCP_APIKEY;
+function Map({ items }) {
+    const [map, setMap] = useState(null);
 
-
-function Map({ start, end }) {
-    const [items, setItems] = useState([]);
+    const handleOnLoad = useCallback((mapInstance) => {
+        setMap(mapInstance);
+    }, []);
 
     useEffect(() => {
-        const fetchItems = async () => {
-            axios.get("http://localhost:8080/map", {
-                params: {
-                    start: start.format("YYYY-MM-DDTHH:mm:ss"),
-                    end: end.format("YYYY-MM-DDTHH:mm:ss")
-                }
-            })
-                .then(res => {
-                    console.log(res);
-                    setItems(res.data.map(item => ({
-                        lat: item.latitude,
-                        lng: item.longitude
-                    })));
-                })
-                .catch(err => {
-                    console.error(err);
-                })
-
+        if (map) {
+            if (items && items.length > 0) {
+                const bounds = new window.google.maps.LatLngBounds();
+                items.forEach(item => {
+                    bounds.extend({ lat: item.lat, lng: item.lng });
+                });
+                map.fitBounds(bounds);
+            } else {
+                map.setCenter(center);
+                map.setZoom(zoom);
+            }
         }
-
-        fetchItems();
-    }, [start, end])
+    }, [items, map]);
 
     return ( // マップの位置おかしいのとサイズ調整しといて
-        <LoadScript googleMapsApiKey={key}>
-            <GoogleMap
-                mapContainerStyle={containerStyle}
-                center={center}
-                zoom={17}
-            >
+        <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={center}
+            zoom={zoom}
+            onLoad={handleOnLoad}
+        >
+            {items && items.length > 0 && (
                 <Polyline
                     path={items}
                     options={polylineOptions}
                 />
-            </GoogleMap>
-        </LoadScript>
+            )}
+        </GoogleMap>
     );
 };
 
